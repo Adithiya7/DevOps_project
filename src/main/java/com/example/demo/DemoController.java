@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.*;
 public class DemoController {
 
     // Define the expected payload message
-    private final String defaultMessage = "Hello, Spring Boot!";
+    private final String defaultMessage = "Hello, Spring Boot! This is Jarvis!";
 
     // GET /status returns a 200 OK response with a simple message
     @GetMapping
     public ResponseEntity<String> getStatus() {
-        return ResponseEntity.ok("Status: OK");
+        return ResponseEntity.ok("Status: OK, Works Great!");
     }
 
     // POST /status validates the payload
