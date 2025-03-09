@@ -38,7 +38,7 @@ jobs:
 
       - name: Configure JFrog CLI
         run: |
-          jfrog rt config my-server \
+          jf config add my-server \
             --url="${{ secrets.ARTIFACTORY_URL }}" \
             --user="${{ secrets.ARTIFACTORY_USER }}" \
             --password="${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" \
@@ -46,7 +46,7 @@ jobs:
 
       - name: Upload artifact to Artifactory
         run: |
-          jfrog rt u "target/demo-spring-boot-*.jar" "springboot-App/Artifacts" --server-id=my-server
+          jf rt u "target/demo-spring-boot-*.jar" "springboot-App/Artifacts" --server-id=my-server
 
       - name: Upload JAR to S3
         run: |
