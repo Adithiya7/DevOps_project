@@ -1,0 +1,11 @@
+Postman API check:
+http://localhost:8080/status/  ## 200 OK Scenario
+
+http://localhost:8080/status/ 
+-H Content-Type : application/json
+Message: JSON
+{
+    "message": "Hello, Spring Boot!"
+}
+
+To validate POST Payload Scenario
