@@ -9,7 +9,7 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -19,6 +19,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+
+      - name: Run Tests with Code Coverage
+        run: mvn test jacoco:report --batch-mode   
 
       - name: Cache Maven packages
         uses: actions/cache@v3
