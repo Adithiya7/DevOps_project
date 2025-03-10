@@ -21,7 +21,7 @@ jobs:
           java-version: '11'
 
       - name: Run Tests with Code Coverage
-        run: mvn test jacoco:report --batch-mode   
+        run: mvn verify --batch-mode
 
       - name: Cache Maven packages
         uses: actions/cache@v3
