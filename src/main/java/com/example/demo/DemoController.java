@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 public class DemoController {
 
     // Define the expected payload message
-    private final String defaultMessage = "Hello, Spring Boot! Latest Version";
+    private final String defaultMessage = "Hello, Spring Boot! Latest Version!!!";
 
     // GET /status returns a 200 OK response with a simple message
     @GetMapping
