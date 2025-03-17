@@ -57,14 +57,16 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:${{ github.run_number }} .
-          docker tag ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:${{ github.run_number }} ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:latest
-  
+          JFROG_DOCKER_REPO="${{ secrets.ARTIFACTORY_URL }}/artifactory/docker-local"
+          docker build -t $JFROG_DOCKER_REPO/spring-app:${{ github.run_number }} .
+          docker tag $JFROG_DOCKER_REPO/spring-app:${{ github.run_number }} $JFROG_DOCKER_REPO/spring-app:latest
+        
       - name: Push Docker Image to JFrog
         run: |
-          echo ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }} | docker login -u ${{ secrets.ARTIFACTORY_USER }} --password-stdin ${{ secrets.ARTIFACTORY_URL }}
-          docker push ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:${{ github.run_number }}
-          docker push ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:latest
+          echo ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }} | docker login -u ${{ secrets.ARTIFACTORY_USER }} --password-stdin ${{ secrets.ARTIFACTORY_URL }}/artifactory
+          JFROG_DOCKER_REPO="${{ secrets.ARTIFACTORY_URL }}/artifactory/docker-local"
+          docker push $JFROG_DOCKER_REPO/spring-app:${{ github.run_number }}
+          docker push $JFROG_DOCKER_REPO/spring-app:latest
 
       - name: Upload JAR to S3
         run: |
