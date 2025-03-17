@@ -53,7 +53,7 @@ jobs:
 
       - name: Login to Jfrog Docker registry
         run: |
-          echo ${{secrets.ARTIFACTORY_ACCESS_TOKEN}} | docker login --username ${{secrets.ARTIFACTORY_USER}} --password-stdin https://trialpfvj0w.jfrog.io/artifactory/api/docker/docker-local
+          echo ${{secrets.ARTIFACTORY_ACCESS_TOKEN}} | docker login --username ${{secrets.ARTIFACTORY_USER}} --password-stdin https://trialpfvj0w.jfrog.io/artifactory/docker-local/
 
       - name: Build Docker Image
         run: |
