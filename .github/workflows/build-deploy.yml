@@ -51,6 +51,10 @@ jobs:
         run: |
           jf rt u "target/demo-spring-boot-*.jar" "springapp/artifacts_1.1" --server-id=my-server
 
+      - name: Login to Jfrog Docker registry
+        run: |
+          echo ${{secrets.ARTIFACTORY_ACCESS_TOKEN}} | docker login --username ${{secrets.ARTIFACTORY_USER}} --password-stdin https://trialpfvj0w.jfrog.io/artifactory/api/docker/docker-local
+
       - name: Build Docker Image
         run: |
           docker build -t ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:${{ github.run_number }} .
