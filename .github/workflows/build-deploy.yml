@@ -51,6 +51,17 @@ jobs:
         run: |
           jf rt u "target/demo-spring-boot-*.jar" "springapp/artifacts_1.1" --server-id=my-server
 
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:${{ github.run_number }} .
+          docker tag ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:${{ github.run_number }} ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:latest
+  
+      - name: Push Docker Image to JFrog
+        run: |
+          echo ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }} | docker login -u ${{ secrets.ARTIFACTORY_USER }} --password-stdin ${{ secrets.ARTIFACTORY_URL }}
+          docker push ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:${{ github.run_number }}
+          docker push ${{ secrets.ARTIFACTORY_URL }}/docker-local/spring-app:latest
+
       - name: Upload JAR to S3
         run: |
           aws s3 cp target/demo-spring-boot-*.jar s3://spring-app-artifactory/JFrog_Artifacts/
