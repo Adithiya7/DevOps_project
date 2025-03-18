@@ -47,18 +47,22 @@ jobs:
             --password="${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" \
             --interactive=false
 
+      - name: Remove HTTPS from ARTIFACTORY_URL
+        run: echo "ARTIFACTORY_REGISTRY=${{ secrets.ARTIFACTORY_URL }}" | sed 's|https://||' >> $GITHUB_ENV
+    
       - name: Generate Docker Image Version
         run: echo "IMAGE_VERSION=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
     
       - name: Build and Push Docker Image to JFrog Artifactory
         run: |
-          IMAGE_TAG=${{ secrets.ARTIFACTORY_URL }}/dockerdemo-docker/spring-app:${{ env.IMAGE_VERSION }}
+          IMAGE_TAG="${{ env.ARTIFACTORY_REGISTRY }}/dockerdemo-docker/spring-app:${{ env.IMAGE_VERSION }}"
           echo "Pushing Docker Image with tag: $IMAGE_TAG"
               
-          echo "${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" | docker login -u ${{ secrets.ARTIFACTORY_USER }} --password-stdin ${{ secrets.ARTIFACTORY_URL }}
-              
-          docker build -t $IMAGE_TAG .
-          docker push $IMAGE_TAG
+          echo "${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" | docker login -u ${{ secrets.ARTIFACTORY_USER }} --password-stdin ${{ env.ARTIFACTORY_REGISTRY }}
+          echo "ARTIFACTORY_REGISTRY=${{ env.ARTIFACTORY_REGISTRY }}"
+          echo "IMAGE_VERSION=${{ env.IMAGE_VERSION }}"
+          docker build -t "$IMAGE_TAG" .
+          docker push "$IMAGE_TAG"
     
       - name: Save Docker Image Version for Deployment
         run: echo "${{ env.IMAGE_VERSION }}" > image_version.txt
