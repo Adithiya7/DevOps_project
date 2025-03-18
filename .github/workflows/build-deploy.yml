@@ -75,13 +75,16 @@ jobs:
          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+      - name: Set up SSH Key
+        run: |
+           echo "${{ secrets.EC2_PEM_KEY }}" > ec2_key.pem
+           chmod 600 ec2_key.pem
+
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ env.EC2_IP }} << 'EOF'
+          ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{ env.EC2_IP }} << 'EOF'
           bash -s << 'INNER_EOF'
           echo "Deploying latest Docker image from JFrog..."
-          ./root/Spring-App/Deployment.sh
+          ./root/Spring-App/deployment.sh
           INNER_EOF
           EOF
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_PEM_KEY }}
