@@ -61,3 +61,30 @@ jobs:
           echo "${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" | docker login -u ${{ secrets.ARTIFACTORY_USER }} --password-stdin ${{ env.ARTIFACTORY_REGISTRY }}
           docker build -t "$IMAGE_TAG" .
           docker push "$IMAGE_TAG"
+
+      - name: Get EC2 Public IP
+        id: ec2-ip
+        run: |
+            IP=$(aws ec2 describe-instances \
+            --region us-east-1 \
+            --filters "Name=instance-state-name,Values=running" \
+            --query "Reservations[*].Instances[*].PublicIpAddress" \
+            --output text)
+            echo "EC2_IP=$IP" >> $GITHUB_ENV
+        env:
+           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  
+      - name: Set up SSH Key
+        run: |
+             echo "${{ secrets.EC2_PEM_KEY }}" > ec2_key.pem
+             chmod 600 ec2_key.pem
+  
+      - name: Deploy to EC2
+        run: |
+            ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{ env.EC2_IP }} << 'EOF'
+            bash -s << 'INNER_EOF'
+            echo "Deploying latest Docker image from JFrog..."
+            bash /home/ec2-user/deployment.sh
+            INNER_EOF
+            EOF
