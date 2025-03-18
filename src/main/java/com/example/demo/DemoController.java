@@ -14,7 +14,7 @@ public class DemoController {
     // GET /status returns a 200 OK response with a simple message
     @GetMapping
     public ResponseEntity<String> getStatus() {
-        return ResponseEntity.ok("Status: YES OK, Version 7 Verified Successfully!");
+        return ResponseEntity.ok("Status: OK, Version 7 Verified Successfully!");
     }
 
     // POST /status validates the payload
