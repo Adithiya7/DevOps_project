@@ -49,23 +49,7 @@ jobs:
 
       - name: Upload artifact to Artifactory
         run: |
-          jf rt u "target/demo-spring-boot-*.jar" "springapp/artifacts_1.1" --server-id=my-server
-
-      - name: Login to Jfrog Docker registry
-        run: |
-          echo ${{secrets.ARTIFACTORY_ACCESS_TOKEN}} | docker login --username ${{secrets.ARTIFACTORY_USER}} --password-stdin https://trialpfvj0w.jfrog.io/artifactory/docker-local/
-
-      - name: Login & Build Docker Image
-        run: |
-          docker build -t https://trialpfvj0w.jfrog.io/artifactory/docker-local/docker-local/spring-app:${{ github.run_number }} .
-          docker tag https://trialpfvj0w.jfrog.io/artifactory/docker-local/docker-local/spring-app:${{ github.run_number }} https://trialpfvj0w.jfrog.io/artifactory/docker-local/docker-local/spring-app:latest
-    
-      - name: Push Docker Image to JFrog
-        run: |
-          echo ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }} | docker login -u ${{ secrets.ARTIFACTORY_USER }} --password-stdin ${{ secrets.ARTIFACTORY_URL }}
-          docker push https://trialpfvj0w.jfrog.io/artifactory/docker-local/docker-local/spring-app:${{ github.run_number }}
-          docker push https://trialpfvj0w.jfrog.io/artifactory/docker-local/docker-local/spring-app:latest
-  
+          jf rt u "target/demo-spring-boot-*.jar" "springapp/artifacts" --server-id=my-server
 
       - name: Upload JAR to S3
         run: |
