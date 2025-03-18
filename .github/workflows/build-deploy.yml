@@ -1,4 +1,4 @@
-name: Build and Deploy to Artifactory
+name: Build and Deploy to JFrog (New)
 
 on:
   push:
@@ -49,26 +49,35 @@ jobs:
 
       - name: Clean ARTIFACTORY_URL (Remove HTTPS and Trailing Slash)
         run: echo "ARTIFACTORY_REGISTRY=$(echo '${{ secrets.ARTIFACTORY_URL }}' | sed 's|https://||; s|/$||')" >> $GITHUB_ENV
-           
+
       - name: Generate Docker Image Version
         run: echo "IMAGE_VERSION=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
-    
+
       - name: Build and Push Docker Image to JFrog Artifactory
         run: |
           IMAGE_TAG="${{ env.ARTIFACTORY_REGISTRY }}/dockerdemo-docker/spring-app:${{ env.IMAGE_VERSION }}"
           echo "Pushing Docker Image with tag: $IMAGE_TAG"
               
           echo "${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" | docker login -u ${{ secrets.ARTIFACTORY_USER }} --password-stdin ${{ env.ARTIFACTORY_REGISTRY }}
-          echo "ARTIFACTORY_REGISTRY=${{ env.ARTIFACTORY_REGISTRY }}"
-          echo "IMAGE_VERSION=${{ env.IMAGE_VERSION }}"
           docker build -t "$IMAGE_TAG" .
           docker push "$IMAGE_TAG"
-    
-      - name: Save Docker Image Version for Deployment
-        run: echo "${{ env.IMAGE_VERSION }}" > image_version.txt
-    
-      - name: Upload Version Info to S3
-        run: aws s3 cp image_version.txt s3://spring-app-artifactory/JFrog_Artifacts/
+
+      - name: Get EC2 Public IP
+        id: ec2-ip
+        run: |
+          IP=$(aws ec2 describe-instances \
+          --filters "Name=instance-state-name,Values=running" \
+          --query "Reservations[*].Instances[*].PublicIpAddress" \
+          --output text)
+          echo "EC2_IP=$IP" >> $GITHUB_ENV
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ env.EC2_IP }} << 'EOF'
+          bash -s << 'INNER_EOF'
+          echo "Deploying latest Docker image from JFrog..."
+          ./root/Spring-App/Deployment.sh
+          INNER_EOF
+          EOF
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_PEM_KEY }}
