@@ -47,15 +47,24 @@ jobs:
             --password="${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" \
             --interactive=false
 
-      - name: Build and Push docker image to Artifactory
+      - name: Generate Docker Image Version
+        run: echo "IMAGE_VERSION=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+    
+      - name: Build and Push Docker Image to JFrog Artifactory
         run: |
-          echo "cmVmdGtuOjAxOjE3NzM4MDUyODY6b3Z4OFFGenhqTUlqTFBLQ0VKMm5vaG80Z000" | docker login -u aditerraform@gmail.com --password-stdin trialpfvj0w.jfrog.io
-          docker build -t trialpfvj0w.jfrog.io/dockerdemo-docker/spring-app:1.0 .
-          docker push trialpfvj0w.jfrog.io/dockerdemo-docker/spring-app:1.0
-
-      - name: Upload JAR to S3
-        run: |
-          aws s3 cp target/demo-spring-boot-*.jar s3://spring-app-artifactory/JFrog_Artifacts/
+          IMAGE_TAG=${{ secrets.ARTIFACTORY_URL }}/dockerdemo-docker/spring-app:${{ env.IMAGE_VERSION }}
+          echo "Pushing Docker Image with tag: $IMAGE_TAG"
+              
+          echo "${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" | docker login -u ${{ secrets.ARTIFACTORY_USER }} --password-stdin ${{ secrets.ARTIFACTORY_URL }}
+              
+          docker build -t $IMAGE_TAG .
+          docker push $IMAGE_TAG
+    
+      - name: Save Docker Image Version for Deployment
+        run: echo "${{ env.IMAGE_VERSION }}" > image_version.txt
+    
+      - name: Upload Version Info to S3
+        run: aws s3 cp image_version.txt s3://spring-app-artifactory/JFrog_Artifacts/
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
