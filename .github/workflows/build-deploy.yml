@@ -85,6 +85,6 @@ jobs:
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no ec2-user@${{ env.EC2_IP }} << 'EOF'
           bash -s << 'INNER_EOF'
           echo "Deploying latest Docker image from JFrog..."
-          bash /root/Spring-App/deployment.sh
+          bash /home/ec2-user/deployment.sh
           INNER_EOF
           EOF
