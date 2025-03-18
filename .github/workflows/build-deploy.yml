@@ -47,9 +47,11 @@ jobs:
             --password="${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" \
             --interactive=false
 
-      - name: Upload artifact to Artifactory
+      - name: Build and Push docker image to Artifactory
         run: |
-          jf rt u "target/demo-spring-boot-*.jar" "springapp" --server-id=my-server
+          echo "cmVmdGtuOjAxOjE3NzM4MDUyODY6b3Z4OFFGenhqTUlqTFBLQ0VKMm5vaG80Z000" | docker login -u aditerraform@gmail.com --password-stdin trialpfvj0w.jfrog.io
+          docker build -t trialpfvj0w.jfrog.io/dockerdemo-docker/spring-app:1.0 .
+          docker push trialpfvj0w.jfrog.io/dockerdemo-docker/spring-app:1.0
 
       - name: Upload JAR to S3
         run: |
