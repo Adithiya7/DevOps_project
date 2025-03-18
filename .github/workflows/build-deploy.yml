@@ -47,9 +47,9 @@ jobs:
             --password="${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" \
             --interactive=false
 
-      - name: Remove HTTPS from ARTIFACTORY_URL
-        run: echo "ARTIFACTORY_REGISTRY=${{ secrets.ARTIFACTORY_URL }}" | sed 's|https://||' >> $GITHUB_ENV
-    
+      - name: Clean ARTIFACTORY_URL (Remove HTTPS and Trailing Slash)
+        run: echo "ARTIFACTORY_REGISTRY=$(echo '${{ secrets.ARTIFACTORY_URL }}' | sed 's|https://||; s|/$||')" >> $GITHUB_ENV
+           
       - name: Generate Docker Image Version
         run: echo "IMAGE_VERSION=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
     
