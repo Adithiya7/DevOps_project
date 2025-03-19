@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.*;
 public class DemoController {
 
     // Define the expected payload message
-    private final String defaultMessage = "Hello, Spring Boot! This is Jarvis";
+    private final String defaultMessage = "Hello, Spring Boot! Version Updated and Live now";
 
     // GET /status returns a 200 OK response with a simple message
     @GetMapping
     public ResponseEntity<String> getStatus() {
-        return ResponseEntity.ok("Status: OK, Jarvis has been Launched!");
+        return ResponseEntity.ok("Status: OK, Latest Version launched Successfully!");
     }
 
     // POST /status validates the payload
     @PostMapping
     public ResponseEntity<String> verifyPayload(@RequestBody Payload payload) {
         if (defaultMessage.equals(payload.getMessage())) {
-            return ResponseEntity.ok("Payload verified: OK, Hello from Jarvis!");
+            return ResponseEntity.ok("Payload verified: OK, Latest Version Launched!");
         } else {
             // When payload message is not as expected, return an error status code (400 Bad Request)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
