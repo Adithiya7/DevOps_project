@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.*;
 public class DemoController {
 
     // Define the expected payload message
-    private final String defaultMessage = "Hello, Spring Boot! Latest Version deployed on new server";
+    private final String defaultMessage = "Hello, Spring Boot! Latest Version 7 deployed on new server";
 
     // GET /status returns a 200 OK response with a simple message
     @GetMapping
     public ResponseEntity<String> getStatus() {
-        return ResponseEntity.ok("Status: YES OK, Latest Version launched on new server!");
+        return ResponseEntity.ok("Status: YES OK, Latest Version 7 launched on new server!");
     }
 
     // POST /status validates the payload
